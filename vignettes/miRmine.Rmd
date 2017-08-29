@@ -31,12 +31,14 @@ this dataset as RangedSummarizedExperiment.
 All files used to prepare the dataset are in `extdata` folder and could be 
 loaded as follows:
 
-```
-library(GenomicRanges)
-library(rtracklayer)
-library(SummarizedExperiment)
-library(Biostrings)
-library(Rsamtools)
+```{r}
+suppressWarnings(suppressMessages(suppressPackageStartupMessages({
+    library(GenomicRanges)
+    library(rtracklayer)
+    library(SummarizedExperiment)
+    library(Biostrings)
+    library(Rsamtools)
+})))
 
 ext.data <- system.file("extdata", package = "miRmine")
 hsa.gff3.file = file.path(ext.data, "hsa.gff3")
@@ -68,16 +70,17 @@ data help file: `?miRmine`.
 
 To load this dataset use:
 
-```
+```{r}
 library("miRmine")
 data(miRmine)
+miRmine
 ```
 
 You may want to further subset data on some of many colData features
 (Tissue, Cell Line, Disease, Sex, Instrument) or output some specifics of 
 particular experiment(s) (Accession #, Description, Publication):
 
-```
+```{r}
 adenocarcinoma = miRmine[ , miRmine$Disease %in% c("Adenocarcinoma")]
 adenocarcinoma
 as.character(adenocarcinoma$Sample.Accession)
@@ -88,7 +91,7 @@ miRBase hsa.gff3, with addition of actual miRNA sequence as DNAString
 instance. For example to read the sequence of top expressed miRNA over 
 a subset of samples:
 
-```
+```{r}
 top.mirna = names(sort(rowSums(assays(adenocarcinoma)$counts))[1])
 rowRanges(adenocarcinoma)$mirna_seq[[top.mirna]]
 ```
@@ -96,11 +99,11 @@ rowRanges(adenocarcinoma)$mirna_seq[[top.mirna]]
 `miRmine` could be directly used in DESeq2 
 (note that expression values are RPM not raw reads):
 
-```
+```{r}
 library("DESeq2")
 mirmine.subset = miRmine[, miRmine$Tissue %in% c("Lung", "Saliva")]
-mirmine.subset@assays$data$expression = 
-    ceiling(mirmine.subset@assays$data$expression)
+mirmine.subset@assays$data$counts = 
+    ceiling(mirmine.subset@assays$data$counts)
 ddsSE <- DESeqDataSet(mirmine.subset, design = ~ Tissue)
 ddsSE <- ddsSE[ rowSums(counts(ddsSE)) > 1, ]
 # ddsSE$Tissue <- factor(ddsSE$Tissue, levels = c("Lung","Saliva"))
