@@ -1,0 +1,23 @@
+Package: miRmine
+Type: Package
+Title: Data package with miRNA-seq datasets from miRmine database 
+        as RangedSummarizedExperiment
+Version: 0.99.0
+Date: 2017-08-29
+Authors@R: c(person(given = "Dusan", family = "Randjelovic", role =
+        c("aut", "cre"), email = "dusan.randjelovic@sbgenomics.com"))
+Description: miRmine database is a collection of expression profiles 
+        from different publicly available miRNA-seq datasets,  
+        Panwar et al (2017) miRmine: A Database of Human miRNA Expression, 
+        prepared with this data package as RangedSummarizedExperiment.
+Depends: R (>= 3.3.0), SummarizedExperiment
+Suggests: BiocStyle, knitr, rmarkdown
+Imports: knitr
+License: GPL (>= 3)
+LazyData: true
+biocViews: Homo_sapiens_Data, RNASeqData, SequencingData, ExpressionData
+VignetteBuilder: knitr
+NeedsCompilation: no
+Author: Dusan Randjelovic [aut, cre]
+Maintainer: Dusan Randjelovic <dusan.randjelovic@sbgenomics.com>
+RoxygenNote: 6.0.1
