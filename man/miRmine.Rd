@@ -3,7 +3,8 @@
 \docType{data}
 \name{miRmine}
 \alias{miRmine}
-\title{miRmine dataset, from Panwar et al (2017) miRmine: A Database of Human miRNA Expression}
+\title{miRmine dataset,
+from Panwar et al (2017) miRmine: A Database of Human miRNA Expression}
 \format{\code{miRmine} A \link{RangedSummarizedExperiment} object.
 
 For all the details on how this dataset was produced, see examples.}
@@ -17,9 +18,11 @@ miRmine
 \code{miRmine}
 }
 \description{
-miRmine dataset, from Panwar et al (2017) miRmine: A Database of Human miRNA Expression
+miRmine dataset,
+from Panwar et al (2017) miRmine: A Database of Human miRNA Expression
 }
 \examples{
+\dontrun{
 library(GenomicRanges)
 library(rtracklayer)
 library(SummarizedExperiment)
@@ -27,10 +30,10 @@ library(Biostrings)
 
 ext.data <- system.file("extdata", package = "miRmine")
 hsa.gff3.file = file.path(ext.data, "hsa.gff3")
-mature.fa.file = file.path(extdata, "mature.fa")
-miRmine.info.file = file.path(extdata, "miRmine-info.txt")
-miRmine.tissues.file = file.path(extdata, "miRmine-tissues.txt")
-miRmine.cell.lines.file = file.path(extdata, "miRmine-cell-lines.txt")
+mature.fa.file = file.path(ext.data, "mature.fa")
+miRmine.info.file = file.path(ext.data, "miRmine-info.txt")
+miRmine.tissues.file = file.path(ext.data, "miRmine-tissues.csv")
+miRmine.cell.lines.file = file.path(ext.data, "miRmine-cell-lines.csv")
 
 gffRangedData.all <- import.gff3(hsa.gff3.file, genome="GRCh38")
 gffRangedData.all$source = "miRBase v21"
@@ -39,7 +42,8 @@ for (id in seq_along(as.character(gffRangedData.all$ID))){
     name = gffRangedData.all[id, ]$Name
     derives_from = gffRangedData.all[id, ]$Derives_from
     if (!is.na(derives_from)){
-        precursor = gffRangedData.all[gffRangedData.all$ID == derives_from, ]$Name
+        precursor =
+            gffRangedData.all[gffRangedData.all$ID == derives_from, ]$Name
         gffRangedData.all[id, ]$UniqueName = paste(name, precursor, sep=".")
     }
 }
@@ -47,23 +51,27 @@ gff = gffRangedData.all[gffRangedData.all$type == "miRNA"]
 gff = sort(gff, by=~UniqueName)
 
 tiss = read.csv(miRmine.tissues.file)
-tiss$UniqueName = paste(tiss$Mature.miRNA.ID, tiss$Precursor.miRNA.ID, sep=".")
+tiss$UniqueName =
+    paste(tiss$Mature.miRNA.ID, tiss$Precursor.miRNA.ID, sep=".")
 tiss = tiss[base::order(tiss$UniqueName), ]
 
 diff.names = setdiff(tiss$UniqueName, gff$UniqueName) # 7 rows differ
 
 cellines = read.csv(miRmine.cell.lines.file)
-cellines$UniqueName = paste(cellines$Mature.miRNA.ID, cellines$Precursor.miRNA.ID, sep=".")
+cellines$UniqueName =
+    paste(cellines$Mature.miRNA.ID, cellines$Precursor.miRNA.ID, sep=".")
 cellines = cellines[base::order(cellines$UniqueName), ]
 
 setdiff(cellines$UniqueName, gff$UniqueName) # same 7 rows differ
 
 tissue.mirnas.freq = base::sort(table(tiss$UniqueName))
 gff.mirnas.freq = base::sort(table(gff$UniqueName))
-setdiff(tissue.mirnas.freq, gff.mirnas.freq) # additional 2 rows differ (duplicated)
+setdiff(tissue.mirnas.freq, gff.mirnas.freq) # additional 2 rows duplicated
 tissue.mirnas.freq[tissue.mirnas.freq > 1] # shows which rows are different
 
-base::rownames(tiss[(tiss$UniqueName \%in\% c('hsa-miR-3142.hsa-mir-3142','hsa-miR-4487.hsa-mir-4487')),]) # 624, 1213
+base::rownames(
+    tiss[(tiss$UniqueName \%in\%
+        c('hsa-miR-3142.hsa-mir-3142','hsa-miR-4487.hsa-mir-4487')),])
 
 tiss = tiss[-c(624, 1213),]
 tiss = tiss[!(tiss$UniqueName \%in\% diff.names), ]
@@ -71,8 +79,12 @@ cellines = cellines[-c(624, 1213),]
 cellines = cellines[!(cellines$UniqueName \%in\% diff.names), ]
 
 mirnas.unique.names = tiss$UniqueName
-tiss.counts = tiss[, -which(names(tiss) \%in\% c("UniqueName", "Mature.miRNA.ID", "Precursor.miRNA.ID"))]
-cellines.counts = cellines[, -which(names(cellines) \%in\% c("UniqueName", "Mature.miRNA.ID", "Precursor.miRNA.ID"))]
+tiss.counts =
+    tiss[, -which(names(tiss) \%in\%
+        c("UniqueName", "Mature.miRNA.ID", "Precursor.miRNA.ID"))]
+cellines.counts =
+    cellines[, -which(names(cellines) \%in\%
+        c("UniqueName", "Mature.miRNA.ID", "Precursor.miRNA.ID"))]
 expression = as.matrix(cbind(tiss.counts, cellines.counts))
 counts = ceiling(expression)
 rownames(expression) = mirnas.unique.names
@@ -97,6 +109,13 @@ gff$mirna_seq = dna.strings
 # construct RSE
 meta = read.csv(miRmine.info.file, sep="\\t")
 
-miRmine = SummarizedExperiment(assays=SimpleList(counts=counts, rpm=expression), rowData=NULL, rowRanges=gff, colData=meta)
+miRmine =
+    SummarizedExperiment(
+        assays=SimpleList(counts=counts, rpm=expression),
+        rowData=NULL,
+        rowRanges=gff,
+        colData=meta
+    )
+}
 }
 \keyword{datasets}

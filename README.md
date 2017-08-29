@@ -10,7 +10,7 @@ To install the latest development version, use the `devtools` package (available
 ```
 devtools::install_github("duxan/miRmine")
 ```
-<!--- 
+
 # Vignette
 
 The vignette contains all the preprocessing steps as well as some use-cases. It can be found in the "vignettes/miRmine.html" file. After installation, the vignette can be accessed from R:
@@ -18,15 +18,4 @@ The vignette contains all the preprocessing steps as well as some use-cases. It 
 ```
 browseVignettes("miRmine")
 ```
-
-# DE with miRmine
-library("DESeq2")
-ddsSE <- DESeqDataSet(miRmine, design = ~ Disease)
-ddsSE <- ddsSE[ rowSums(counts(ddsSE)) > 1, ]
-dds <- estimateSizeFactors(ddsSE, type="iterate") # can take long time
-dds <- DESeq(dds)
-res <- results(dds)
-res
-
---->
 

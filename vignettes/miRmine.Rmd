@@ -1,0 +1,117 @@
+---
+title: "miRmine dataset as RangedSummarizedExperiment"
+author:
+    name: Dusan Randjelovic
+    email: dusan.randjelovic@sbgenomics.com
+package: miRmine
+output:
+    BiocStyle::html_document2
+abstract: |
+    miRmine is data package built for easier use of miRmine dataset 
+    (Panwar et al (2017) miRmine: A Database of Human miRNA Expression. 
+    Bioinformatics, btx019. doi: 10.1093/bioinformatics/btx019). 
+    In it's current version miRmine contains 304 publicly available 
+    experiments from NCBI SRA. Annotations used are from miRBase v21 
+    (miRBase: Annotating high confidence microRNAs using deep sequencing data.
+    Kozomara A, Griffiths-Jones S. NAR 2014 42:D68-D73). 
+vignette: |
+    %\VignetteIndexEntry{miRmine}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+---
+
+# Data preparation
+
+miRmine dataset contains rich metadata around 304 selected publicly available, 
+miRNA-Seq experiments. Authors' processed the data with miRdeep2 using 
+annotation files from miRBase v21. Mentioned metadata is used as colData 
+and miRBase annotations as GRanges are used as rowRanges while preparing 
+this dataset as RangedSummarizedExperiment.
+
+All files used to prepare the dataset are in `extdata` folder and could be 
+loaded as follows:
+
+```
+library(GenomicRanges)
+library(rtracklayer)
+library(SummarizedExperiment)
+library(Biostrings)
+library(Rsamtools)
+
+ext.data <- system.file("extdata", package = "miRmine")
+hsa.gff3.file = file.path(ext.data, "hsa.gff3")
+mature.fa.file = file.path(ext.data, "mature.fa")
+miRmine.info.file = file.path(ext.data, "miRmine-info.txt")
+miRmine.tissues.file = file.path(ext.data, "miRmine-tissues.csv")
+miRmine.cell.lines.file = file.path(ext.data, "miRmine-cell-lines.csv")
+
+gffRangedData.all <- import.gff3(hsa.gff3.file, genome="GRCh38", 
+    feature.type="miRNA")
+tissues = read.csv(miRmine.tissues.file)
+cell.lines = read.csv(miRmine.cell.lines.file)
+mature.mirnas.fasta = FaFile(mature.fa.file)
+metadata = read.csv(miRmine.info.file, sep="\t")
+```
+
+However, number of ranges from miRBase GFF and number of features output 
+by miRdeep2 are not the same, so some rows from `tissues` and `cell.lines` 
+data.frames were removed. There were 2 duplicated rows (with same mature miRNA 
+and same precursor miRNA) and 7 rows that don't correspond to mirna/precursor 
+combination in miRBase v21.
+
+Cleaned and preprocessed data are used to construct the `miRmine`
+RangedSummarizedExperiment. Details of this proccess could be followed in 
+data help file: `?miRmine`.
+
+
+# Usage
+
+To load this dataset use:
+
+```
+library("miRmine")
+data(miRmine)
+```
+
+You may want to further subset data on some of many colData features
+(Tissue, Cell Line, Disease, Sex, Instrument) or output some specifics of 
+particular experiment(s) (Accession #, Description, Publication):
+
+```
+adenocarcinoma = miRmine[ , miRmine$Disease %in% c("Adenocarcinoma")]
+adenocarcinoma
+as.character(adenocarcinoma$Sample.Accession)
+```
+
+rowRanges data is also rich in metadata, containing all the features from 
+miRBase hsa.gff3, with addition of actual miRNA sequence as DNAString 
+instance. For example to read the sequence of top expressed miRNA over 
+a subset of samples:
+
+```
+top.mirna = names(sort(rowSums(assays(adenocarcinoma)$counts))[1])
+rowRanges(adenocarcinoma)$mirna_seq[[top.mirna]]
+```
+
+`miRmine` could be directly used in DESeq2 
+(note that expression values are RPM not raw reads):
+
+```
+library("DESeq2")
+mirmine.subset = miRmine[, miRmine$Tissue %in% c("Lung", "Saliva")]
+mirmine.subset@assays$data$expression = 
+    ceiling(mirmine.subset@assays$data$expression)
+ddsSE <- DESeqDataSet(mirmine.subset, design = ~ Tissue)
+ddsSE <- ddsSE[ rowSums(counts(ddsSE)) > 1, ]
+# ddsSE$Tissue <- factor(ddsSE$Tissue, levels = c("Lung","Saliva"))
+# dds <- estimateSizeFactors(ddsSE, type="iterate") # can take long time
+dds <- DESeq(ddsSE)
+res <- results(dds)
+res
+```
+
+# Session info {.unnumbered}
+
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
+```
