@@ -11,7 +11,7 @@ Description: miRmine database is a collection of expression profiles
         Panwar et al (2017) miRmine: A Database of Human miRNA Expression, 
         prepared with this data package as RangedSummarizedExperiment.
 Depends: R (>= 3.4), SummarizedExperiment
-Suggests: BiocStyle, knitr, rmarkdown
+Suggests: BiocStyle, knitr, rmarkdown, GenomicRanges, rtracklayer, Biostrings, Rsamtools, DESeq2
 License: GPL (>= 3)
 LazyData: true
 biocViews: Homo_sapiens_Data, RNASeqData, SequencingData, ExpressionData
