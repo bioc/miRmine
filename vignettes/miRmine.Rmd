@@ -5,7 +5,7 @@ author:
     email: dusan.randjelovic@sbgenomics.com
 package: miRmine
 output:
-    BiocStyle::html_document2
+    BiocStyle::html_document
 abstract: |
     miRmine is data package built for easier use of miRmine dataset 
     (Panwar et al (2017) miRmine: A Database of Human miRNA Expression. 
