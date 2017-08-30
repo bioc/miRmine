@@ -26,42 +26,29 @@ miRmine dataset contains rich metadata around 304 selected publicly available,
 miRNA-Seq experiments. Authors' processed the data with miRdeep2 using 
 annotation files from miRBase v21. Mentioned metadata is used as colData 
 and miRBase annotations as GRanges are used as rowRanges while preparing 
-this dataset as RangedSummarizedExperiment.
+this dataset as RangedSummarizedExperiment. Data used for preprocessing and 
+constructing the `miRmine` RangedSummarizedExperiment are available in 
+`extdata` folder. Details of this proccess could be followed in 
+data help file: `?miRmine`.
 
-All files used to prepare the dataset are in `extdata` folder and could be 
-loaded as follows:
 
 ```{r}
-library(GenomicRanges)
-library(rtracklayer)
-library(SummarizedExperiment)
-library(Biostrings)
-library(Rsamtools)
+#library(GenomicRanges)
+#library(rtracklayer)
+#library(SummarizedExperiment)
+#library(Biostrings)
+#library(Rsamtools)
 
 ext.data <- system.file("extdata", package = "miRmine")
-hsa.gff3.file = file.path(ext.data, "hsa.gff3")
-mature.fa.file = file.path(ext.data, "mature.fa")
-miRmine.info.file = file.path(ext.data, "miRmine-info.txt")
-miRmine.tissues.file = file.path(ext.data, "miRmine-tissues.csv")
-miRmine.cell.lines.file = file.path(ext.data, "miRmine-cell-lines.csv")
-
-gffRangedData.all <- import.gff3(hsa.gff3.file, genome="GRCh38", 
-    feature.type="miRNA")
-tissues = read.csv(miRmine.tissues.file)
-cell.lines = read.csv(miRmine.cell.lines.file)
-mature.mirnas.fasta = FaFile(mature.fa.file)
-metadata = read.csv(miRmine.info.file, sep="\t")
+list.files(ext.data)
 ```
 
-However, number of ranges from miRBase GFF and number of features output 
-by miRdeep2 are not the same, so some rows from `tissues` and `cell.lines` 
-data.frames were removed. There were 2 duplicated rows (with same mature miRNA 
-and same precursor miRNA) and 7 rows that don't correspond to mirna/precursor 
-combination in miRBase v21.
-
-Cleaned and preprocessed data are used to construct the `miRmine`
-RangedSummarizedExperiment. Details of this proccess could be followed in 
-data help file: `?miRmine`.
+Number of ranges from miRBase GFF and number of features output 
+by miRdeep2 are not the same (2813 vs. 2822). After closer look it turns out 
+that 2 rows from either **tissues** or **cell.lines** data are duplicated
+(with same mature miRNA and same precursor miRNA) and 7 rows don't correspond 
+to mirna/precursor combination existing in miRBase v21. These rows were 
+removed for all samples, as seen in `?miRmine`.
 
 
 # Usage
@@ -99,13 +86,14 @@ rowRanges(adenocarcinoma)$mirna_seq[[top.mirna]]
 
 ```{r}
 library("DESeq2")
+
 mirmine.subset = miRmine[, miRmine$Tissue %in% c("Lung", "Saliva")]
 mirmine.subset@assays$data$counts = 
     ceiling(mirmine.subset@assays$data$counts)
+
 ddsSE <- DESeqDataSet(mirmine.subset, design = ~ Tissue)
 ddsSE <- ddsSE[ rowSums(counts(ddsSE)) > 1, ]
-# ddsSE$Tissue <- factor(ddsSE$Tissue, levels = c("Lung","Saliva"))
-# dds <- estimateSizeFactors(ddsSE, type="iterate") # can take long time
+
 dds <- DESeq(ddsSE)
 res <- results(dds)
 res

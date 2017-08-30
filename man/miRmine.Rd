@@ -86,9 +86,7 @@ cellines.counts =
     cellines[, -which(names(cellines) \%in\%
         c("UniqueName", "Mature.miRNA.ID", "Precursor.miRNA.ID"))]
 expression = as.matrix(cbind(tiss.counts, cellines.counts))
-counts = ceiling(expression)
 rownames(expression) = mirnas.unique.names
-rownames(counts) = mirnas.unique.names
 
 # add mirna sequences
 library(Rsamtools)
@@ -111,7 +109,7 @@ meta = read.csv(miRmine.info.file, sep="\\t")
 
 miRmine =
     SummarizedExperiment(
-        assays=SimpleList(counts=counts, rpm=expression),
+        assays=SimpleList(counts=expression),
         rowData=NULL,
         rowRanges=gff,
         colData=meta
