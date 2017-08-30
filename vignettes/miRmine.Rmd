@@ -32,13 +32,11 @@ All files used to prepare the dataset are in `extdata` folder and could be
 loaded as follows:
 
 ```{r}
-suppressWarnings(suppressMessages(suppressPackageStartupMessages({
-    library(GenomicRanges)
-    library(rtracklayer)
-    library(SummarizedExperiment)
-    library(Biostrings)
-    library(Rsamtools)
-})))
+library(GenomicRanges)
+library(rtracklayer)
+library(SummarizedExperiment)
+library(Biostrings)
+library(Rsamtools)
 
 ext.data <- system.file("extdata", package = "miRmine")
 hsa.gff3.file = file.path(ext.data, "hsa.gff3")

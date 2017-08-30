@@ -2,7 +2,7 @@ Package: miRmine
 Type: Package
 Title: Data package with miRNA-seq datasets from miRmine database 
         as RangedSummarizedExperiment
-Version: 0.99.2
+Version: 0.99.3
 Date: 2017-08-29
 Authors@R: c(person(given = "Dusan", family = "Randjelovic", role =
         c("aut", "cre"), email = "dusan.randjelovic@sbgenomics.com"))
