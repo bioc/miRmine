@@ -3,8 +3,7 @@
 \docType{data}
 \name{miRmine}
 \alias{miRmine}
-\title{miRmine dataset,
-from Panwar et al (2017) miRmine: A Database of Human miRNA Expression}
+\title{miRmine dataset}
 \format{\code{miRmine} A \link{RangedSummarizedExperiment} object.
 
 For all the details on how this dataset was produced, see examples.}
@@ -12,10 +11,7 @@ For all the details on how this dataset was produced, see examples.}
 Panwar et al (2017) miRmine: A Database of Human miRNA Expression
 }
 \usage{
-miRmine
-}
-\value{
-\code{miRmine}
+data("miRmine")
 }
 \description{
 miRmine dataset,

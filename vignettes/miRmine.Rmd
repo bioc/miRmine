@@ -88,8 +88,12 @@ rowRanges(adenocarcinoma)$mirna_seq[[top.mirna]]
 library("DESeq2")
 
 mirmine.subset = miRmine[, miRmine$Tissue %in% c("Lung", "Saliva")]
-mirmine.subset@assays$data$counts = 
-    ceiling(mirmine.subset@assays$data$counts)
+mirmine.subset = SummarizedExperiment(
+    assays = SimpleList(counts=ceiling(assays(mirmine.subset)$counts)), 
+    colData=colData(mirmine.subset), 
+    rowRanges=rowRanges(mirmine.subset),
+    rowData=NULL
+)
 
 ddsSE <- DESeqDataSet(mirmine.subset, design = ~ Tissue)
 ddsSE <- ddsSE[ rowSums(counts(ddsSE)) > 1, ]

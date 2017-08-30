@@ -4,7 +4,9 @@
 
 
 
-#' miRmine dataset,
+#' @title miRmine dataset
+#'
+#' @description miRmine dataset,
 #' from Panwar et al (2017) miRmine: A Database of Human miRNA Expression
 #'
 #' @format \code{miRmine} A \link{RangedSummarizedExperiment} object.
@@ -13,7 +15,9 @@
 #'
 #' @source Panwar et al (2017) miRmine: A Database of Human miRNA Expression
 #'
-#' @return \code{miRmine}
+#' @usage
+#'
+#' data("miRmine")
 #'
 #' @examples
 #' \dontrun{
