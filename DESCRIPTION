@@ -2,7 +2,7 @@ Package: miRmine
 Type: Package
 Title: Data package with miRNA-seq datasets from miRmine database 
         as RangedSummarizedExperiment
-Version: 1.25.0
+Version: 1.25.1
 Date: 2021-11-21
 Authors@R: c(person(given = "Dusan", family = "Randjelovic", role =
         c("aut", "cre"), email = "dusan.randjelovic@sbgenomics.com"))
@@ -18,3 +18,4 @@ biocViews: Homo_sapiens_Data, RNASeqData, SequencingData, ExpressionData
 VignetteBuilder: knitr
 NeedsCompilation: no
 RoxygenNote: 6.0.1
+PackageStatus: Deprecated
